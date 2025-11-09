@@ -436,6 +436,13 @@ def set_peft_model_state_dict(
     else:
         raise NotImplementedError
 
+    # remove the unwanted "vqc.dev.states" key
+    keys_to_check = list(peft_model_state_dict.keys())
+
+    for key in keys_to_check:
+        if 'states' in key:
+            del peft_model_state_dict[key]
+
     peft_model_state_dict, mismatched_keys = _find_mismatched_keys(
         model, peft_model_state_dict, ignore_mismatched_sizes=ignore_mismatched_sizes
     )

@@ -20,6 +20,7 @@ from .eva import get_eva_state_dict, initialize_lora_eva_weights
 from .gptq import GPTQLoraLinear
 from .layer import Conv2d, Conv3d, Embedding, Linear, LoraLayer
 from .model import LoraModel
+from .qpeft_log_callback import QPeftLogCallback, QPeftLogForwardCallback
 
 
 __all__ = [
@@ -36,6 +37,8 @@ __all__ = [
     "LoraRuntimeConfig",
     "get_eva_state_dict",
     "initialize_lora_eva_weights",
+    "QPeftLogCallback",
+    "QPeftLogForwardCallback"
 ]
 
 register_peft_method(name="lora", config_cls=LoraConfig, model_cls=LoraModel, is_mixed_compatible=True)

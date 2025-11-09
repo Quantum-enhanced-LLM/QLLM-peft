@@ -528,6 +528,25 @@ class LoraConfig(PeftConfig):
         },
     )
 
+    # add support of QPeFT
+    use_qpeft: bool = field(
+        default=False,
+        metadata={"help": "Whether or not to use the QPeFT method."}
+    )
+    ### configs of QPeFT
+    qpeft_arch : str = field(
+        default='ABC',
+        metadata={"help": "Optional QPeFT architecture. Available: ABC, AB, BC, A, B, C"}
+    )
+    qpeft_qcircuit_layers : Optional[int] = field(
+        default=None,
+        metadata={"help": "qpeft_qcircuit_layers (default = n_qubit = lora_rank)"}
+    )
+    qpeft_classical_layers : Optional[str] = field(
+        default=None,
+        metadata={"help": "Specify a list of layers will not use qpeft."}
+    )
+
     def to_dict(self):
         """
         Returns the configuration for your adapter model as a dictionary. Removes runtime configurations.

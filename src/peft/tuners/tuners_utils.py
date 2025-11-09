@@ -781,7 +781,12 @@ class BaseTunerLayer(ABC):
 
         # Deactivate grads on the inactive adapter and activate grads on the active adapter
         for layer_name in self.adapter_layer_names:
-            module_dict = getattr(self, layer_name)
+            try:
+                module_dict = getattr(self, layer_name)
+            except AttributeError as e:
+                warnings.warn(f"Layer_name: {layer_name} is not found in TunerLayer. Still continue anyway.")
+                continue
+
             for key, layer in module_dict.items():
                 if key in adapter_names:
                     # Note: It is possible that not a single layer is called with requires_grad_(True) here. This may

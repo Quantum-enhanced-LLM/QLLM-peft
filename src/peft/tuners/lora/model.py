@@ -212,7 +212,37 @@ class LoraModel(BaseTuner):
             )(self.model)
         except AttributeError:
             pass
+        
+        use_qpeft = lora_config.use_qpeft
+        if not use_qpeft:
+            use_qpeft = False
+        else:
+            use_qpeft = True
 
+            # see any layer is turned to classical
+            qpeft_classical_layers = lora_config.qpeft_classical_layers
+            
+            if qpeft_classical_layers is not None:
+                if isinstance(qpeft_classical_layers, str):
+                    qpeft_classical_layers = qpeft_classical_layers.split(',')
+                else:
+                    raise ValueError(f"Cannot identify argument: qpeft_classical_layers = {qpeft_classical_layers}")
+                    
+                # some layers are specified to classical
+                for layer in qpeft_classical_layers:
+                    prefix = f"model.layers.{layer}.self_attn"
+                    if current_key.startswith(prefix):
+                        use_qpeft = False
+                        break
+
+        kwargs["use_qpeft"] = use_qpeft
+        if use_qpeft:
+            # Set arch, default to ABC
+            kwargs['qpeft_arch'] = lora_config.qpeft_arch
+            # Set qpeft_n_qlayers, default to rank
+            nlayers = lora_config.qpeft_qcircuit_layers            
+            kwargs['qpeft_qcircuit_layers'] = nlayers if nlayers is not None else lora_config.r 
+           
         quant_methods = ["gptq", "aqlm", "awq"]
         for quant_method in quant_methods:
             quantization_config = get_quantization_config(self.model, method=quant_method)
